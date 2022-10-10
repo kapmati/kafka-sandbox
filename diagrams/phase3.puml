@@ -1,0 +1,21 @@
+@startuml
+participant data_generator as data_generator
+participant schema_registry as schema_registry
+
+queue       Colors       as Colors
+queue Colors_count as Colors_count
+participant color_stream as color_stream
+participant data_collector as data_collector
+database    PostgreSQL    as PostgreSQL
+
+data_generator -> schema_registry: Push data schema
+data_generator -> Colors : Push data to Kafka topic
+color_stream <- Colors : Stream colors
+color_stream -> Colors_count : Count colors
+data_collector <- Colors_count : Fetch aggregated colors count from Kafka topic
+data_collector -> PostgreSQL : Store aggregated colors count in DB
+data_collector <- Colors : Fetch colors data from Kafka topic
+data_collector <- schema_registry : Fetch data schema
+data_collector -> PostgreSQL : Store colors data in DB
+
+@enduml

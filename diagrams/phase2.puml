@@ -1,0 +1,15 @@
+@startuml
+participant data_generator as data_generator
+participant schema_registry as schema_registry
+
+queue       Colors       as Colors
+participant data_collector as data_collector
+database    PostgreSQL    as PostgreSQL
+
+data_generator -> schema_registry: Push data schema
+data_generator -> Colors : Push data to Kafka topic
+data_collector <- Colors : Fetch data from Kafka topic
+data_collector <- schema_registry : Fetch data schema
+data_collector -> PostgreSQL : Store data in DB
+
+@enduml
